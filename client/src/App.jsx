@@ -1,8 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 import Layout from "./components/Layout";
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 import Home from "./pages/Home";
 import Tasks from "./pages/Tasks";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 import "./App.css";
 
 export default function App() {
@@ -31,13 +36,28 @@ export default function App() {
   };
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}>
-          <Route index element={<Home />} />
-          <Route path="tasks" element={<Tasks />} />
-        </Route>
-      </Routes>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Auth routes without Layout */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          
+          {/* Main app routes with Layout */}
+          <Route path="/" element={<Layout darkMode={darkMode} toggleTheme={toggleTheme} />}>
+            <Route index element={
+              <PublicRoute>
+                <Home />
+              </PublicRoute>
+            } />
+            <Route path="tasks" element={
+              <ProtectedRoute>
+                <Tasks />
+              </ProtectedRoute>
+            } />
+          </Route>
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }

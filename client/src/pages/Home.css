@@ -563,6 +563,29 @@
     radial-gradient(circle at 50% 50%, rgba(16, 163, 127, 0.06) 0%, transparent 70%);
 }
 
+/* Light theme button fixes */
+[data-theme="light"] .btn-primary.btn-large {
+  background: var(--accent-color);
+  color: white;
+  border-color: var(--accent-color);
+}
+
+[data-theme="light"] .btn-primary.btn-large:hover {
+  background: var(--accent-hover);
+  color: white;
+}
+
+[data-theme="light"] .btn-secondary.btn-large {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="light"] .btn-secondary.btn-large:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-color);
+}
+
 /* Additional smooth scroll behavior */
 html {
   scroll-behavior: smooth;
