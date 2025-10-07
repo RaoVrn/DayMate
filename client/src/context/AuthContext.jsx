@@ -33,12 +33,12 @@ export const AuthProvider = ({ children }) => {
       // For now, simulate login
       if (email && password) {
         const userData = {
-          id: 1,
+          id: Date.now(), // Generate unique ID based on current timestamp
           email: email,
-          name: email.split('@')[0]
+          name: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1)
         };
         
-        const token = 'mock-jwt-token';
+        const token = `token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
         localStorage.setItem('authToken', token);
         localStorage.setItem('userData', JSON.stringify(userData));
@@ -61,12 +61,12 @@ export const AuthProvider = ({ children }) => {
       // For now, simulate registration
       if (name && email && password) {
         const userData = {
-          id: 1,
+          id: Date.now(), // Generate unique ID based on current timestamp
           email: email,
           name: name
         };
         
-        const token = 'mock-jwt-token';
+        const token = `token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
         
         localStorage.setItem('authToken', token);
         localStorage.setItem('userData', JSON.stringify(userData));
