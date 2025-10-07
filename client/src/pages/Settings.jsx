@@ -1,237 +1,109 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import './Settings.css';
 
 export default function Settings() {
   const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Get current theme from document
+  const getCurrentTheme = () => {
+    const isDark = !document.documentElement.hasAttribute('data-theme');
+    return isDark ? 'dark' : 'light';
+  };
+
   const [settings, setSettings] = useState({
     // Appearance
-    theme: 'dark',
+    theme: getCurrentTheme(),
     language: 'en',
     fontSize: 'medium',
     animations: true,
     
     // Notifications
     emailNotifications: true,
-    pushNotifications: true,
     taskReminders: true,
-    weeklyDigest: true,
-    
-    // Privacy
-    profileVisibility: 'private',
-    dataCollection: false,
-    analytics: true,
     
     // Task Management
     defaultPriority: 'medium',
     autoArchive: true,
     showCompleted: true,
-    sortBy: 'created',
     
-    // Advanced
-    experimentalFeatures: false,
-    debugMode: false,
+    // Privacy
+    dataCollection: false,
     autoSave: true
   });
-
-  const [activeSection, setActiveSection] = useState('appearance');
 
   const handleSettingChange = (setting, value) => {
     setSettings(prev => ({
       ...prev,
       [setting]: value
     }));
+
+    // Apply theme change immediately
+    if (setting === 'theme') {
+      applyTheme(value);
+    }
   };
 
-  const handleSaveSettings = () => {
-    // TODO: Implement settings save API call
-    console.log('Saving settings:', settings);
-    alert('Settings saved successfully!');
+  const applyTheme = (theme) => {
+    if (theme === 'dark') {
+      document.documentElement.removeAttribute('data-theme');
+    } else if (theme === 'light') {
+      document.documentElement.setAttribute('data-theme', 'light');
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('theme', theme);
+  };
+
+  const handleSaveSettings = async () => {
+    setIsLoading(true);
+    try {
+      // Save to localStorage for persistence
+      localStorage.setItem('userSettings', JSON.stringify(settings));
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      alert('Settings saved successfully!');
+    } catch (error) {
+      alert('Failed to save settings. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleResetSettings = () => {
     if (window.confirm('Are you sure you want to reset all settings to default?')) {
-      setSettings({
+      const defaultSettings = {
         theme: 'dark',
         language: 'en',
         fontSize: 'medium',
         animations: true,
         emailNotifications: true,
-        pushNotifications: true,
         taskReminders: true,
-        weeklyDigest: true,
-        profileVisibility: 'private',
-        dataCollection: false,
-        analytics: true,
         defaultPriority: 'medium',
         autoArchive: true,
         showCompleted: true,
-        sortBy: 'created',
-        experimentalFeatures: false,
-        debugMode: false,
+        dataCollection: false,
         autoSave: true
-      });
+      };
+      setSettings(defaultSettings);
+      applyTheme('dark');
     }
   };
 
-  const settingSections = [
-    {
-      id: 'appearance',
-      title: 'Appearance',
-      icon: '🎨',
-      settings: [
-        {
-          id: 'theme',
-          label: 'Theme',
-          type: 'select',
-          options: [
-            { value: 'dark', label: 'Dark' },
-            { value: 'light', label: 'Light' },
-            { value: 'auto', label: 'System' }
-          ]
-        },
-        {
-          id: 'language',
-          label: 'Language',
-          type: 'select',
-          options: [
-            { value: 'en', label: 'English' },
-            { value: 'es', label: 'Spanish' },
-            { value: 'fr', label: 'French' },
-            { value: 'de', label: 'German' }
-          ]
-        },
-        {
-          id: 'fontSize',
-          label: 'Font Size',
-          type: 'select',
-          options: [
-            { value: 'small', label: 'Small' },
-            { value: 'medium', label: 'Medium' },
-            { value: 'large', label: 'Large' }
-          ]
-        },
-        {
-          id: 'animations',
-          label: 'Enable Animations',
-          type: 'toggle'
-        }
-      ]
-    },
-    {
-      id: 'notifications',
-      title: 'Notifications',
-      icon: '🔔',
-      settings: [
-        {
-          id: 'emailNotifications',
-          label: 'Email Notifications',
-          type: 'toggle'
-        },
-        {
-          id: 'pushNotifications',
-          label: 'Push Notifications',
-          type: 'toggle'
-        },
-        {
-          id: 'taskReminders',
-          label: 'Task Reminders',
-          type: 'toggle'
-        },
-        {
-          id: 'weeklyDigest',
-          label: 'Weekly Digest',
-          type: 'toggle'
-        }
-      ]
-    },
-    {
-      id: 'privacy',
-      title: 'Privacy & Security',
-      icon: '🔒',
-      settings: [
-        {
-          id: 'profileVisibility',
-          label: 'Profile Visibility',
-          type: 'select',
-          options: [
-            { value: 'public', label: 'Public' },
-            { value: 'private', label: 'Private' }
-          ]
-        },
-        {
-          id: 'dataCollection',
-          label: 'Allow Data Collection',
-          type: 'toggle'
-        },
-        {
-          id: 'analytics',
-          label: 'Usage Analytics',
-          type: 'toggle'
-        }
-      ]
-    },
-    {
-      id: 'tasks',
-      title: 'Task Management',
-      icon: '✅',
-      settings: [
-        {
-          id: 'defaultPriority',
-          label: 'Default Priority',
-          type: 'select',
-          options: [
-            { value: 'low', label: 'Low' },
-            { value: 'medium', label: 'Medium' },
-            { value: 'high', label: 'High' }
-          ]
-        },
-        {
-          id: 'autoArchive',
-          label: 'Auto-archive Completed Tasks',
-          type: 'toggle'
-        },
-        {
-          id: 'showCompleted',
-          label: 'Show Completed Tasks',
-          type: 'toggle'
-        },
-        {
-          id: 'sortBy',
-          label: 'Default Sort Order',
-          type: 'select',
-          options: [
-            { value: 'created', label: 'Date Created' },
-            { value: 'priority', label: 'Priority' },
-            { value: 'due', label: 'Due Date' },
-            { value: 'alphabetical', label: 'Alphabetical' }
-          ]
-        }
-      ]
-    },
-    {
-      id: 'advanced',
-      title: 'Advanced',
-      icon: '⚙️',
-      settings: [
-        {
-          id: 'experimentalFeatures',
-          label: 'Enable Experimental Features',
-          type: 'toggle'
-        },
-        {
-          id: 'debugMode',
-          label: 'Debug Mode',
-          type: 'toggle'
-        },
-        {
-          id: 'autoSave',
-          label: 'Auto-save Changes',
-          type: 'toggle'
-        }
-      ]
+  // Load saved settings on mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('userSettings');
+    if (savedSettings) {
+      const parsed = JSON.parse(savedSettings);
+      setSettings(prev => ({ ...prev, ...parsed }));
+      if (parsed.theme) {
+        applyTheme(parsed.theme);
+      }
     }
-  ];
+  }, []);
 
   return (
     <div className="settings-page">
@@ -241,75 +113,200 @@ export default function Settings() {
           <p className="settings-subtitle">Customize your DayMate experience</p>
         </div>
 
-        <div className="settings-content">
-          <div className="settings-sidebar">
-            {settingSections.map(section => (
-              <button
-                key={section.id}
-                className={`settings-nav-item ${activeSection === section.id ? 'active' : ''}`}
-                onClick={() => setActiveSection(section.id)}
-              >
-                <span className="settings-nav-icon">{section.icon}</span>
-                <span className="settings-nav-text">{section.title}</span>
-              </button>
-            ))}
+        <div className="settings-content-compact">
+          <div className="settings-section-compact">
+            <h2 className="section-title-compact">
+              <span className="section-icon">🎨</span>
+              Appearance
+            </h2>
+            
+            <div className="settings-grid">
+              <div className="setting-item-compact">
+                <label className="setting-label">Theme</label>
+                <select
+                  value={settings.theme}
+                  onChange={(e) => handleSettingChange('theme', e.target.value)}
+                  className="setting-select"
+                >
+                  <option value="dark">Dark</option>
+                  <option value="light">Light</option>
+                </select>
+              </div>
+
+              <div className="setting-item-compact">
+                <label className="setting-label">Language</label>
+                <select
+                  value={settings.language}
+                  onChange={(e) => handleSettingChange('language', e.target.value)}
+                  className="setting-select"
+                >
+                  <option value="en">English</option>
+                  <option value="es">Spanish</option>
+                  <option value="fr">French</option>
+                  <option value="de">German</option>
+                </select>
+              </div>
+
+              <div className="setting-item-compact">
+                <label className="setting-label">Font Size</label>
+                <select
+                  value={settings.fontSize}
+                  onChange={(e) => handleSettingChange('fontSize', e.target.value)}
+                  className="setting-select"
+                >
+                  <option value="small">Small</option>
+                  <option value="medium">Medium</option>
+                  <option value="large">Large</option>
+                </select>
+              </div>
+
+              <div className="setting-item-compact">
+                <label className="setting-label">Enable Animations</label>
+                <label className="toggle">
+                  <input
+                    type="checkbox"
+                    checked={settings.animations}
+                    onChange={(e) => handleSettingChange('animations', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
           </div>
 
-          <div className="settings-main">
-            {settingSections.map(section => (
-              activeSection === section.id && (
-                <div key={section.id} className="settings-section">
-                  <h2 className="section-title">
-                    <span className="section-icon">{section.icon}</span>
-                    {section.title}
-                  </h2>
-                  
-                  <div className="settings-list">
-                    {section.settings.map(setting => (
-                      <div key={setting.id} className="setting-item">
-                        <div className="setting-info">
-                          <label className="setting-label">{setting.label}</label>
-                        </div>
-                        <div className="setting-control">
-                          {setting.type === 'toggle' && (
-                            <label className="toggle">
-                              <input
-                                type="checkbox"
-                                checked={settings[setting.id]}
-                                onChange={(e) => handleSettingChange(setting.id, e.target.checked)}
-                              />
-                              <span className="toggle-slider"></span>
-                            </label>
-                          )}
-                          {setting.type === 'select' && (
-                            <select
-                              value={settings[setting.id]}
-                              onChange={(e) => handleSettingChange(setting.id, e.target.value)}
-                              className="setting-select"
-                            >
-                              {setting.options.map(option => (
-                                <option key={option.value} value={option.value}>
-                                  {option.label}
-                                </option>
-                              ))}
-                            </select>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )
-            ))}
+          <div className="settings-section-compact">
+            <h2 className="section-title-compact">
+              <span className="section-icon">🔔</span>
+              Notifications
+            </h2>
             
-            <div className="settings-actions">
-              <button className="btn btn-primary" onClick={handleSaveSettings}>
-                Save Settings
-              </button>
-              <button className="btn btn-secondary" onClick={handleResetSettings}>
-                Reset to Defaults
-              </button>
+            <div className="settings-grid">
+              <div className="setting-item-compact">
+                <label className="setting-label">Email Notifications</label>
+                <label className="toggle">
+                  <input
+                    type="checkbox"
+                    checked={settings.emailNotifications}
+                    onChange={(e) => handleSettingChange('emailNotifications', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div className="setting-item-compact">
+                <label className="setting-label">Task Reminders</label>
+                <label className="toggle">
+                  <input
+                    type="checkbox"
+                    checked={settings.taskReminders}
+                    onChange={(e) => handleSettingChange('taskReminders', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
             </div>
+          </div>
+
+          <div className="settings-section-compact">
+            <h2 className="section-title-compact">
+              <span className="section-icon">✅</span>
+              Task Management
+            </h2>
+            
+            <div className="settings-grid">
+              <div className="setting-item-compact">
+                <label className="setting-label">Default Priority</label>
+                <select
+                  value={settings.defaultPriority}
+                  onChange={(e) => handleSettingChange('defaultPriority', e.target.value)}
+                  className="setting-select"
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+
+              <div className="setting-item-compact">
+                <label className="setting-label">Auto-archive Completed</label>
+                <label className="toggle">
+                  <input
+                    type="checkbox"
+                    checked={settings.autoArchive}
+                    onChange={(e) => handleSettingChange('autoArchive', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div className="setting-item-compact">
+                <label className="setting-label">Show Completed Tasks</label>
+                <label className="toggle">
+                  <input
+                    type="checkbox"
+                    checked={settings.showCompleted}
+                    onChange={(e) => handleSettingChange('showCompleted', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+
+              <div className="setting-item-compact">
+                <label className="setting-label">Auto-save Changes</label>
+                <label className="toggle">
+                  <input
+                    type="checkbox"
+                    checked={settings.autoSave}
+                    onChange={(e) => handleSettingChange('autoSave', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="settings-section-compact">
+            <h2 className="section-title-compact">
+              <span className="section-icon">🔒</span>
+              Privacy & Security
+            </h2>
+            
+            <div className="settings-grid">
+              <div className="setting-item-compact">
+                <label className="setting-label">Data Collection</label>
+                <label className="toggle">
+                  <input
+                    type="checkbox"
+                    checked={settings.dataCollection}
+                    onChange={(e) => handleSettingChange('dataCollection', e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="settings-actions">
+            <button 
+              className="btn btn-primary" 
+              onClick={handleSaveSettings}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <span className="loading-spinner"></span>
+                  Saving...
+                </>
+              ) : (
+                'Save Settings'
+              )}
+            </button>
+            <button className="btn btn-secondary" onClick={handleResetSettings}>
+              Reset to Defaults
+            </button>
+            <button className="btn btn-secondary" onClick={() => window.history.back()}>
+              Go Back
+            </button>
           </div>
         </div>
       </div>
