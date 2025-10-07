@@ -1,0 +1,213 @@
+/* Layout Component Styles */
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-subtle);
+  backdrop-filter: blur(20px);
+  transition: all 0.3s ease;
+}
+
+.app-header.home-header {
+  background: rgba(33, 33, 33, 0.8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: absolute;
+  width: 100%;
+}
+
+[data-theme="light"] .app-header.home-header {
+  background: rgba(245, 245, 244, 0.85);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.header-brand {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.header-brand .app-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.home-header .header-brand .app-title {
+  color: white;
+}
+
+.header-brand .app-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+  margin-top: 0.25rem;
+}
+
+.home-header .header-brand .app-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.main-nav {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.nav-link {
+  padding: 0.625rem 1.25rem;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  position: relative;
+  font-size: 0.95rem;
+}
+
+.home-header .nav-link {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.nav-link:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.home-header .nav-link:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.nav-link.active {
+  color: var(--accent-color);
+  background: rgba(16, 163, 127, 0.1);
+  border: 1px solid rgba(16, 163, 127, 0.2);
+}
+
+.home-header .nav-link.active {
+  color: var(--accent-color);
+  background: rgba(16, 163, 127, 0.15);
+  border: 1px solid rgba(16, 163, 127, 0.3);
+}
+
+.theme-toggle {
+  padding: 0.625rem;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.25rem;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.home-header .theme-toggle {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent-color);
+  transform: scale(1.05);
+}
+
+.home-header .theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .header-content {
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .header-brand .app-title {
+    font-size: 1.5rem;
+  }
+
+  .header-brand .app-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .main-nav {
+    gap: 0.5rem;
+  }
+
+  .nav-link {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  .theme-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .header-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .header-brand {
+    align-items: center;
+    text-align: center;
+  }
+
+  .main-nav {
+    order: -1;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Dark mode specific adjustments */
+[data-theme="light"] .app-header {
+  background: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+[data-theme="light"] .app-header.home-header {
+  background: transparent;
+  border-bottom: none;
+}
+
+[data-theme="light"] .theme-toggle {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+[data-theme="light"] .home-header .theme-toggle {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
